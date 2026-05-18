@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   View, Text, StyleSheet, KeyboardAvoidingView,
-  Platform, Alert, TouchableOpacity, ScrollView
+  Alert, TouchableOpacity, ScrollView, StatusBar,
 } from "react-native";
 import { router } from "expo-router";
 import { useRegister } from "@/features/auth/model/useRegister";
@@ -15,16 +15,13 @@ export const RegisterPage = () => {
   const [confirm, setConfirm] = useState("");
   const [success, setSuccess] = useState(false);
   const register = useRegister();
+
   const isPasswordValid = (p: string) =>
-  p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /[^A-Za-z0-9]/.test(p);
+    p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /[^A-Za-z0-9]/.test(p);
 
   const handleRegister = async () => {
     if (!email || !password || !confirm) {
       Alert.alert("Campos requeridos", "Completa todos los campos.");
-      return;
-    }
-    if (password.length < 8) {
-      Alert.alert("Contraseña débil", "Mínimo 8 caracteres.");
       return;
     }
     if (!isPasswordValid(password)) {
@@ -45,104 +42,191 @@ export const RegisterPage = () => {
 
   if (success) {
     return (
-      <View style={styles.successContainer}>
-        <Text style={styles.successIcon}>📬</Text>
-        <Text style={styles.successTitle}>¡Revisa tu email!</Text>
-        <Text style={styles.successText}>
-          Te enviamos un link de confirmación a{" "}
-          <Text style={{ fontWeight: "700" }}>{email}</Text>.
-          {"  "}Confirma tu cuenta para poder iniciar sesión.
-        </Text>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.link}>← Volver al login</Text>
-        </TouchableOpacity>
-      </View>
+      <>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+        <View style={styles.successContainer}>
+          <View style={styles.successIconWrap}>
+            <Text style={styles.successIcon}>📬</Text>
+          </View>
+          <Text style={styles.successTitle}>¡Revisa tu email!</Text>
+          <Text style={styles.successText}>
+            Enviamos un link de confirmación a{" "}
+            <Text style={{ fontWeight: "700", color: theme.colors.primary }}>{email}</Text>.
+            {"\n"}Confírmalo para poder iniciar sesión.
+          </Text>
+          <TouchableOpacity onPress={() => router.back()} style={styles.successBtn}>
+            <Text style={styles.successBtnText}>← Volver al login</Text>
+          </TouchableOpacity>
+        </View>
+      </>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="height"
-    >
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.card}>
-          <View style={styles.header}>
-            <Text style={styles.logo}>✨</Text>
-            <Text style={styles.title}>Crear cuenta</Text>
-            <Text style={styles.subtitle}>ESFOT — Únete ahora</Text>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Hero */}
+          <View style={styles.hero}>
+            <View style={styles.logoCircle}>
+              <Text style={styles.logoEmoji}>✨</Text>
+            </View>
+            <Text style={styles.appName}>Crear cuenta</Text>
+            <Text style={styles.tagline}>Únete a ESFOT Auth</Text>
           </View>
-          <View style={styles.form}>
-            <Input label="Correo electrónico" value={email}
-              onChangeText={setEmail} keyboardType="email-address"
-              placeholder="tu@correo.com" />
+
+          {/* Card */}
+          <View style={styles.card}>
+            <Input
+              label="Correo electrónico"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              placeholder="tu@correo.com"
+            />
             <Input
               label="Contraseña"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
               placeholder="Mínimo 8 caracteres"
-              showPasswordPolicy   // ← agrega esto
+              showPasswordPolicy
             />
-            <Input label="Confirmar contraseña" value={confirm}
-              onChangeText={setConfirm} secureTextEntry
-              placeholder="Repite tu contraseña" />
-            <Button onPress={handleRegister}
+            <Input
+              label="Confirmar contraseña"
+              value={confirm}
+              onChangeText={setConfirm}
+              secureTextEntry
+              placeholder="Repite tu contraseña"
+            />
+            <Button
+              onPress={handleRegister}
               isLoading={register.isPending}
-              label="Crear cuenta" />
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ alignItems: "center" }}
-            >
-              <Text style={styles.linkMuted}>
-                ¿Ya tienes cuenta?{" "}
-                <Text style={{ color: theme.colors.primary, fontWeight: "700" }}>
-                  Inicia sesión
-                </Text>
-              </Text>
-            </TouchableOpacity>
+              label="Crear cuenta"
+            />
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+          {/* Footer */}
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.footerRow}
+          >
+            <Text style={styles.footerText}>
+              ¿Ya tienes cuenta?{" "}
+              <Text style={styles.footerLink}>Inicia sesión</Text>
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.colors.bg },
-  scroll: { flexGrow: 1, justifyContent: "center", padding: 24 },
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.bg,
+  },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+  },
+  hero: {
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#FFF7ED",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+    ...theme.shadow.subtle,
+  },
+  logoEmoji: { fontSize: 36 },
+  appName: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: theme.colors.text,
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  tagline: {
+    fontSize: 15,
+    color: theme.colors.textMuted,
+  },
   card: {
-    backgroundColor: theme.colors.card, borderRadius: 20,
-    overflow: "hidden", ...theme.shadow.card
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.xl,
+    padding: 24,
+    gap: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadow.card,
   },
-  header: {
-    backgroundColor: theme.colors.primary, padding: 32,
-    alignItems: "center"
+  footerRow: {
+    alignItems: "center",
+    marginTop: 28,
   },
-  logo: { fontSize: 52, marginBottom: 12 },
-  title: { color: "#fff", fontSize: 26, fontWeight: "700", marginBottom: 4 },
-  subtitle: { color: "rgba(255,255,255,0.75)", fontSize: 14 },
-  form: { padding: 28, gap: 16 },
-  link: {
-    color: theme.colors.accent, fontSize: 15,
-    fontWeight: "600", marginTop: 8
+  footerText: {
+    color: theme.colors.textMuted,
+    fontSize: 14,
   },
-  linkMuted: { color: theme.colors.textMuted, fontSize: 14 },
+  footerLink: {
+    color: theme.colors.primary,
+    fontWeight: "700",
+  },
+  // Success
   successContainer: {
-    flex: 1, backgroundColor: theme.colors.bg,
-    justifyContent: "center", alignItems: "center", padding: 32
+    flex: 1,
+    backgroundColor: theme.colors.bg,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
   },
-  successIcon: { fontSize: 72, marginBottom: 24 },
+  successIconWrap: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#F0FDF4",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+    ...theme.shadow.subtle,
+  },
+  successIcon: { fontSize: 48 },
   successTitle: {
-    fontSize: 26, fontWeight: "700",
-    color: theme.colors.primary, marginBottom: 16
+    fontSize: 26,
+    fontWeight: "800",
+    color: theme.colors.text,
+    marginBottom: 12,
+    letterSpacing: -0.5,
   },
   successText: {
-    fontSize: 16, color: theme.colors.textMid,
-    textAlign: "center", lineHeight: 24, marginBottom: 32
+    fontSize: 15,
+    color: theme.colors.textMid,
+    textAlign: "center",
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  successBtn: {
+    backgroundColor: theme.colors.primaryLight,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: theme.radius.full,
+  },
+  successBtnText: {
+    color: theme.colors.primary,
+    fontWeight: "700",
+    fontSize: 15,
   },
 });
-

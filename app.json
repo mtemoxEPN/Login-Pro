@@ -40,7 +40,8 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -49,7 +50,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "89ad1849-b6cc-46a9-806e-5dbe84b0cf1e"
+        "projectId": "e1799c40-69fb-43ee-ae96-c1bd89fc07a1"
       }
     }
   }

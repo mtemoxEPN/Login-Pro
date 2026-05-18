@@ -10,7 +10,7 @@ const SecureStoreAdapter = {
   getItem: async (key: string): Promise<string | null> => {
     const count = await SecureStore.getItemAsync(`${key}_count`);
     if (!count) return SecureStore.getItemAsync(key);
-    
+
     const chunks: string[] = [];
     for (let i = 0; i < parseInt(count); i++) {
       const chunk = await SecureStore.getItemAsync(`${key}_${i}`);
@@ -52,6 +52,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storage:            SecureStoreAdapter,
     autoRefreshToken:   true,
     persistSession:     true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true, // ← necesario para OAuth
   },
 });
