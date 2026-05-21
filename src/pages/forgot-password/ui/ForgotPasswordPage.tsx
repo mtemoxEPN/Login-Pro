@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  View, Text, StyleSheet, KeyboardAvoidingView,
-  Alert, TouchableOpacity, StatusBar,
+  View, Text, StyleSheet, KeyboardAvoidingView, TextInput,
+  Alert, TouchableOpacity, StatusBar, ActivityIndicator
 } from "react-native";
 import { router } from "expo-router";
 import { useForgotPassword } from "@/features/auth/model/useForgotPassword";
@@ -27,66 +27,77 @@ export const ForgotPasswordPage = () => {
     }
   };
 
-  if (success) {
-    return (
-      <>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        <View style={styles.successContainer}>
-          <View style={styles.successIconWrap}>
-            <Text style={styles.successIcon}>📧</Text>
-          </View>
-          <Text style={styles.successTitle}>¡Email enviado!</Text>
-          <Text style={styles.successText}>
+  if (success) return (
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#0D0D0D" />
+      <View style={s.root}>
+        <View style={s.successWrap}>
+          <View style={s.accentBar} />
+          <Text style={s.successEmoji}>📧</Text>
+          <Text style={s.successTitle}>
+            Email{"\n"}<Text style={s.accent}>enviado.</Text>
+          </Text>
+          <Text style={s.successSub}>
             Revisa tu bandeja en{" "}
-            <Text style={{ fontWeight: "700", color: theme.colors.primary }}>{email}</Text>.
-            {"\n"}Haz clic en el link para restablecer tu contraseña.
+            <Text style={{ color: "#F5F5F0", fontWeight: "700" }}>{email}</Text>
+            {"\n"}y sigue el enlace para restablecer tu contraseña.
           </Text>
           <TouchableOpacity
+            style={s.outlineBtn}
             onPress={() => router.replace("/(auth)/login")}
-            style={styles.successBtn}
           >
-            <Text style={styles.successBtnText}>← Volver al login</Text>
+            <Text style={s.outlineBtnText}>← Volver al login</Text>
           </TouchableOpacity>
         </View>
-      </>
-    );
-  }
+      </View>
+    </>
+  );
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
-        <View style={styles.inner}>
-          {/* Back */}
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Text style={styles.backText}>← Volver</Text>
+      <StatusBar barStyle="light-content" backgroundColor="#0D0D0D" />
+      <KeyboardAvoidingView style={s.root} behavior="padding">
+        <View style={s.inner}>
+          <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+            <Text style={s.backText}>← Volver</Text>
           </TouchableOpacity>
 
-          {/* Hero */}
-          <View style={styles.hero}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoEmoji}>🔑</Text>
-            </View>
-            <Text style={styles.appName}>¿Olvidaste tu contraseña?</Text>
-            <Text style={styles.tagline}>
-              Ingresa tu correo y te enviaremos{"\n"}un link para restablecerla
+          <View style={s.hero}>
+            <View style={s.accentBar} />
+            <Text style={s.eyebrow}>Recuperación</Text>
+            <Text style={s.h1}>
+              ¿Olvidaste{"\n"}<Text style={s.accent}>tu clave?</Text>
             </Text>
+            <Text style={s.tagline}>Te enviamos un enlace de recuperación al instante</Text>
           </View>
 
-          {/* Card */}
-          <View style={styles.card}>
-            <Input
-              label="Correo electrónico"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              placeholder="tu@correo.com"
-            />
-            <Button
+          <View style={s.separator} />
+
+          <View style={s.form}>
+            <View style={s.fieldGroup}>
+              <Text style={s.fieldLabel}>Correo electrónico</Text>
+              <TextInput
+                style={s.fieldInput}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="tu@correo.com"
+                placeholderTextColor="#444"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[s.ctaBtn, forgotPassword.isPending && s.btnDisabled]}
               onPress={handleSend}
-              isLoading={forgotPassword.isPending}
-              label="Enviar instrucciones"
-            />
+              disabled={forgotPassword.isPending}
+              activeOpacity={0.85}
+            >
+              {forgotPassword.isPending
+                ? <ActivityIndicator color="#0D0D0D" />
+                : <Text style={s.ctaBtnText}>Enviar instrucciones</Text>
+              }
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -94,107 +105,29 @@ export const ForgotPasswordPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.bg,
-  },
-  inner: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  backBtn: {
-    position: "absolute",
-    top: 56,
-    left: 24,
-  },
-  backText: {
-    color: theme.colors.primary,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  hero: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#FFF7ED",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    ...theme.shadow.subtle,
-  },
-  logoEmoji: { fontSize: 36 },
-  appName: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: theme.colors.text,
-    letterSpacing: -0.5,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  tagline: {
-    fontSize: 14,
-    color: theme.colors.textMuted,
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  card: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.radius.xl,
-    padding: 24,
-    gap: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    ...theme.shadow.card,
-  },
-  // Success
-  successContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.bg,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  successIconWrap: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: theme.colors.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-    ...theme.shadow.subtle,
-  },
-  successIcon: { fontSize: 48 },
-  successTitle: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: theme.colors.text,
-    marginBottom: 12,
-    letterSpacing: -0.5,
-  },
-  successText: {
-    fontSize: 15,
-    color: theme.colors.textMid,
-    textAlign: "center",
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-  successBtn: {
-    backgroundColor: theme.colors.primaryLight,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderRadius: theme.radius.full,
-  },
-  successBtnText: {
-    color: theme.colors.primary,
-    fontWeight: "700",
-    fontSize: 15,
-  },
+const s = StyleSheet.create({
+  root:          { flex: 1, backgroundColor: "#0D0D0D" },
+  inner:         { flex: 1, justifyContent: "center" },
+  backBtn:       { position: "absolute", top: 56, left: 28, zIndex: 10 },
+  backText:      { fontSize: 14, color: "#C8F03C", fontWeight: "600" },
+  hero:          { paddingHorizontal: 28, paddingTop: 60, paddingBottom: 28 },
+  accentBar:     { width: 40, height: 4, backgroundColor: "#C8F03C", borderRadius: 100, marginBottom: 24 },
+  eyebrow:       { fontSize: 11, fontWeight: "700", color: "#C8F03C", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 },
+  h1:            { fontSize: 40, fontWeight: "800", color: "#F5F5F0", letterSpacing: -1.5, lineHeight: 44, marginBottom: 8 },
+  accent:        { color: "#C8F03C" },
+  tagline:       { fontSize: 14, color: "#555", lineHeight: 20 },
+  separator:     { height: 0.5, backgroundColor: "#1A1A1A", marginHorizontal: 28 },
+  form:          { paddingHorizontal: 24, paddingTop: 24, gap: 14 },
+  fieldGroup:    { gap: 6 },
+  fieldLabel:    { fontSize: 10, fontWeight: "700", color: "#666", letterSpacing: 1, textTransform: "uppercase" },
+  fieldInput:    { backgroundColor: "#161616", borderWidth: 0.5, borderColor: "#2A2A2A", borderRadius: 14, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: "#F5F5F0" },
+  ctaBtn:        { backgroundColor: "#C8F03C", borderRadius: 16, paddingVertical: 16, alignItems: "center" },
+  ctaBtnText:    { fontSize: 15, fontWeight: "800", color: "#0D0D0D", letterSpacing: -0.2 },
+  btnDisabled:   { opacity: 0.5 },
+  successWrap:   { flex: 1, justifyContent: "center", paddingHorizontal: 32 },
+  successEmoji:  { fontSize: 52, marginBottom: 20 },
+  successTitle:  { fontSize: 40, fontWeight: "800", color: "#F5F5F0", letterSpacing: -1.2, lineHeight: 44, marginBottom: 14 },
+  successSub:    { fontSize: 15, color: "#555", lineHeight: 24, marginBottom: 36 },
+  outlineBtn:    { borderWidth: 1, borderColor: "#2A2A2A", borderRadius: 16, paddingVertical: 15, alignItems: "center" },
+  outlineBtnText:{ fontSize: 14, color: "#888", fontWeight: "600" },
 });

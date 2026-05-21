@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { router } from "expo-router";
 import { useLogin } from "@/features/auth/model/useLogin";
@@ -19,6 +21,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import { makeRedirectUri } from "expo-auth-session";
+import { GlowOrb } from "@/shared/ui/GlowOrb";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -81,189 +84,143 @@ export const LoginPage = () => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <StatusBar barStyle="light-content" backgroundColor="#080808" />
+      <KeyboardAvoidingView style={s.root} behavior="padding">
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={s.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Hero top */}
-          <View style={styles.hero}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoEmoji}>🔐</Text>
+          {/* ── Luces de fondo ── */}
+          <GlowOrb color="rgb(65, 50, 101)" size={280} style={{ top: -100, left: -100 }} />
+          <GlowOrb color="rgba(93,101,50,1)" size={200} style={{ top: -60, right: -70 }} />
+          <GlowOrb color="rgba(93,101,50,1)" size={660} style={{ top: 220, alignSelf: "center", left: "20%" }} />
+
+          {/* ── Hero ── */}
+          <View style={s.hero}>
+            <View style={s.logoBox}>
+              <View style={s.logoInner} />
             </View>
-            <Text style={styles.appName}>ESFOT Auth</Text>
-            <Text style={styles.tagline}>Inicia sesión en tu cuenta</Text>
+            <Text style={s.h1}>
+              Hola,{"\n"}<Text style={s.h1Accent}>bienvenido.</Text>
+            </Text>
+            <Text style={s.tagline}>Ingresa para continuar a tu cuenta</Text>
           </View>
 
-          {/* Card */}
-          <View style={styles.card}>
-            <Input
-              label="Correo electrónico"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              placeholder="tu@correo.com"
-            />
-            <Input
-              label="Contraseña"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholder="Tu contraseña"
-            />
+          <View style={s.separator} />
+
+          {/* ── Formulario ── */}
+          <View style={s.form}>
+            <View style={s.fieldGroup}>
+              <Text style={s.fieldLabel}>Correo</Text>
+              <TextInput
+                style={s.fieldInput}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="tu@correo.com"
+                placeholderTextColor="#3A3A3A"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={s.fieldGroup}>
+              <Text style={s.fieldLabel}>Contraseña</Text>
+              <TextInput
+                style={[s.fieldInput, s.fieldInputFocus]}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Tu contraseña"
+                placeholderTextColor="#3A3A3A"
+                secureTextEntry
+              />
+            </View>
 
             <TouchableOpacity
               onPress={() => router.push("/(auth)/forgot-password")}
-              style={styles.forgotRow}
+              style={s.forgotRow}
             >
-              <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+              <Text style={s.forgotText}>¿Olvidaste tu contraseña?</Text>
             </TouchableOpacity>
 
-            <Button
-              onPress={handleLogin}
-              isLoading={login.isPending}
-              label="Iniciar sesión"
-            />
-
-            {/* Separador */}
-            <View style={styles.separatorRow}>
-              <View style={styles.separatorLine} />
-              <Text style={styles.separatorText}>o continúa con</Text>
-              <View style={styles.separatorLine} />
+            {/* Botón con su propio glow */}
+            <View style={s.ctaWrap}>
+              {/* <GlowOrb color="rgba(200,240,60,1)" size={160} style={s.ctaGlow} /> */}
+              <TouchableOpacity
+                style={[s.ctaBtn, login.isPending && s.btnDisabled]}
+                onPress={handleLogin}
+                disabled={login.isPending}
+                activeOpacity={0.85}
+              >
+                {login.isPending
+                  ? <ActivityIndicator color="#080808" />
+                  : <Text style={s.ctaBtnText}>Iniciar sesión</Text>
+                }
+              </TouchableOpacity>
             </View>
 
-            {/* Google */}
+            <View style={s.divRow}>
+              <View style={s.divLine} />
+              <Text style={s.divText}>o continúa con</Text>
+              <View style={s.divLine} />
+            </View>
+
             <TouchableOpacity
+              style={[s.googleBtn, googleLoading && s.btnDisabled]}
               onPress={handleGoogleSignIn}
-              activeOpacity={0.85}
               disabled={googleLoading}
-              style={[styles.googleBtn, googleLoading && { opacity: 0.6 }]}
+              activeOpacity={0.8}
             >
-              <FontAwesome name="google" size={18} color="#DB4437" />
-              <Text style={styles.googleBtnLabel}>
+              <FontAwesome name="google" size={16} color="#666" />
+              <Text style={s.googleBtnText}>
                 {googleLoading ? "Conectando..." : "Continuar con Google"}
               </Text>
             </TouchableOpacity>
-          </View>
 
-          {/* Footer */}
-          <TouchableOpacity
-            onPress={() => router.push("/(auth)/register")}
-            style={styles.footerRow}
-          >
-            <Text style={styles.footerText}>
-              ¿No tienes cuenta?{" "}
-              <Text style={styles.footerLink}>Regístrate</Text>
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/register")}
+              style={s.footerRow}
+            >
+              <Text style={s.footerText}>
+                ¿No tienes cuenta?{" "}
+                <Text style={s.footerLink}>Regístrate</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.bg,
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  hero: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: theme.colors.primaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    ...theme.shadow.subtle,
-  },
-  logoEmoji: {
-    fontSize: 36,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: theme.colors.text,
-    letterSpacing: -0.5,
-    marginBottom: 6,
-  },
-  tagline: {
-    fontSize: 15,
-    color: theme.colors.textMuted,
-    fontWeight: "400",
-  },
-  card: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.radius.xl,
-    padding: 24,
-    gap: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    ...theme.shadow.card,
-  },
-  forgotRow: {
-    alignSelf: "flex-end",
-    marginTop: -4,
-  },
-  forgotText: {
-    color: theme.colors.primary,
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  separatorRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  separatorLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: theme.colors.border,
-  },
-  separatorText: {
-    color: theme.colors.textMuted,
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  googleBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: theme.colors.bg,
-    paddingVertical: 14,
-    borderRadius: theme.radius.md,
-    borderWidth: 1.5,
-    borderColor: theme.colors.border,
-    gap: 10,
-    ...theme.shadow.subtle,
-  },
-  googleBtnLabel: {
-    color: theme.colors.text,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  footerRow: {
-    alignItems: "center",
-    marginTop: 28,
-  },
-  footerText: {
-    color: theme.colors.textMuted,
-    fontSize: 14,
-  },
-  footerLink: {
-    color: theme.colors.primary,
-    fontWeight: "700",
-  },
+const s = StyleSheet.create({
+  root:           { flex: 1, backgroundColor: "#080808" },
+  scroll:         { flexGrow: 1, justifyContent: "center", paddingBottom: 40, overflow: "hidden" },
+  hero:           { paddingHorizontal: 28, paddingTop: 64, paddingBottom: 28 },
+  logoBox:        { width: 38, height: 38, borderRadius: 10, backgroundColor: "rgba(200,240,60,0.1)", borderWidth: 0.5, borderColor: "rgba(200,240,60,0.25)", alignItems: "center", justifyContent: "center", marginBottom: 20 },
+  logoInner:      { width: 16, height: 16, borderWidth: 2, borderColor: "#C8F03C", borderRadius: 4 },
+  h1:             { fontSize: 40, fontWeight: "800", color: "#F5F5F0", letterSpacing: -1.5, lineHeight: 44, marginBottom: 8 },
+  h1Accent:       { color: "#C8F03C" },
+  tagline:        { fontSize: 14, color: "#555", lineHeight: 20 },
+  separator:      { height: 0.5, backgroundColor: "rgba(255,255,255,0.06)", marginHorizontal: 28 },
+  form:           { paddingHorizontal: 24, paddingTop: 24, gap: 14 },
+  fieldGroup:     { gap: 6 },
+  fieldLabel:     { fontSize: 10, fontWeight: "700", color: "#555", letterSpacing: 1, textTransform: "uppercase" },
+  fieldInput:     { backgroundColor: "rgba(255,255,255,0.04)", borderWidth: 0.5, borderColor: "rgba(255,255,255,0.1)", borderRadius: 14, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: "#F5F5F0" },
+  fieldInputFocus:{ borderColor: "rgba(200,240,60,0.45)", backgroundColor: "rgba(200,240,60,0.04)" },
+  forgotRow:      { alignSelf: "flex-end" },
+  forgotText:     { fontSize: 13, color: "#C8F03C", fontWeight: "600" },
+  ctaWrap:        { position: "relative", alignItems: "center" },
+  ctaGlow:        { top: -50, alignSelf: "center", opacity: 0.6 },
+  ctaBtn:         { width: "100%", backgroundColor: "#C8F03C", borderRadius: 16, paddingVertical: 16, alignItems: "center", zIndex: 1 },
+  ctaBtnText:     { fontSize: 15, fontWeight: "800", color: "#080808", letterSpacing: -0.2 },
+  btnDisabled:    { opacity: 0.5 },
+  divRow:         { flexDirection: "row", alignItems: "center", gap: 10 },
+  divLine:        { flex: 1, height: 0.5, backgroundColor: "rgba(255,255,255,0.07)" },
+  divText:        { fontSize: 11, color: "#333" },
+  googleBtn:      { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: "rgba(255,255,255,0.04)", borderWidth: 0.5, borderColor: "rgba(255,255,255,0.1)", borderRadius: 14, paddingVertical: 14 },
+  googleBtnText:  { fontSize: 14, color: "#666", fontWeight: "600" },
+  footerRow:      { alignItems: "center" },
+  footerText:     { fontSize: 13, color: "#3A3A3A" },
+  footerLink:     { color: "#C8F03C", fontWeight: "700" },
 });

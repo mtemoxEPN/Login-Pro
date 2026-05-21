@@ -59,24 +59,23 @@ export const HomePage = () => {
   const isGoogleUser = user?.app_metadata?.provider === "google";
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <YStack flex={1} backgroundColor="#FFFFFF">
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0D0D0D" }}>
+      <YStack flex={1} backgroundColor="#0D0D0D">
 
-        {/* Header */}
+        {/* ── Topbar ── */}
         <XStack
-          paddingHorizontal="$4"
-          paddingVertical="$3"
+          paddingHorizontal="$5"
+          paddingVertical="$4"
           justifyContent="space-between"
           alignItems="center"
-          borderBottomWidth={1}
-          borderBottomColor="#E2E8F0"
-          backgroundColor="#FFFFFF"
+          borderBottomWidth={0.5}
+          borderBottomColor="#1E1E1E"
         >
           <YStack gap="$1">
-            <Text fontSize={12} color="#94A3B8" fontWeight="500" letterSpacing={0.5}>
-              BIENVENIDO 👋
+            <Text fontSize={10} fontWeight="700" color="#555" letterSpacing={1} style={{ textTransform: "uppercase" }}>
+              Sesión activa
             </Text>
-            <Text fontSize={15} fontWeight="700" color="#0F172A" numberOfLines={1}>
+            <Text fontSize={14} fontWeight="700" color="#F5F5F0" numberOfLines={1}>
               {user?.email ?? "Usuario"}
             </Text>
           </YStack>
@@ -86,120 +85,119 @@ export const HomePage = () => {
               <Button
                 size="$3"
                 onPress={() => setIsPasswordSheetOpen(true)}
-                backgroundColor="#EFF6FF"
+                backgroundColor="#1E2A14"
                 borderWidth={0}
                 borderRadius="$10"
-                pressStyle={{ opacity: 0.8 }}
+                pressStyle={{ opacity: 0.7 }}
               >
-                <Text color="#2563EB" fontSize={12} fontWeight="600">🔑 Contraseña</Text>
+                <Text color="#C8F03C" fontSize={12} fontWeight="700">Contraseña</Text>
               </Button>
             )}
             <Button
               size="$3"
               onPress={handleSignOut}
-              backgroundColor="#FEF2F2"
+              backgroundColor="#1E1414"
               borderWidth={0}
               borderRadius="$10"
-              pressStyle={{ opacity: 0.8 }}
+              pressStyle={{ opacity: 0.7 }}
             >
-              <Text color="#EF4444" fontSize={12} fontWeight="600">Salir</Text>
+              <Text color="#E05555" fontSize={12} fontWeight="700">Salir</Text>
             </Button>
           </XStack>
         </XStack>
 
-        {/* CRUD */}
+        {/* ── CRUD ── */}
         <TaskDashboard />
 
-        {/* Sheet cambio de contraseña */}
+        {/* ── Sheet cambio contraseña ── */}
         <Sheet
           open={isPasswordSheetOpen}
           onOpenChange={(o) => {
-            if (!o) {
-              setIsPasswordSheetOpen(false);
-              setNewPassword("");
-              setConfirmPassword("");
-            }
+            if (!o) { setIsPasswordSheetOpen(false); setNewPassword(""); setConfirmPassword(""); }
           }}
           modal
           dismissOnSnapToBottom
         >
-          <Sheet.Overlay backgroundColor="rgba(0,0,0,0.3)" />
+          <Sheet.Overlay backgroundColor="rgba(0,0,0,0.7)" />
           <Sheet.Frame
             borderTopLeftRadius="$6"
             borderTopRightRadius="$6"
             padding="$5"
-            backgroundColor="#FFFFFF"
+            backgroundColor="#0D0D0D"
+            borderTopWidth={0.5}
+            borderTopColor="#2A2A2A"
           >
-            <Sheet.Handle marginBottom="$4" backgroundColor="#E2E8F0" />
+            <Sheet.Handle marginBottom="$4" backgroundColor="#2A2A2A" />
             <YStack gap="$4">
               <YStack gap="$1">
-                <Text fontSize={20} fontWeight="800" color="#0F172A" letterSpacing={-0.5}>
-                  Cambiar contraseña
+                <Text fontSize={22} fontWeight="800" color="#F5F5F0" letterSpacing={-0.6}>
+                  Cambiar <Text color="#C8F03C">contraseña</Text>
                 </Text>
-                <Text color="#64748B" fontSize={13}>
-                  Elige una contraseña segura de al menos 8 caracteres.
+                <Text color="#555" fontSize={13}>
+                  Mínimo 8 caracteres.
                 </Text>
               </YStack>
 
               <YStack gap="$2">
-                <Text color="#334155" fontSize={13} fontWeight="600">Nueva contraseña</Text>
+                <Text color="#666" fontSize={10} fontWeight="700" letterSpacing={1} style={{ textTransform: "uppercase" }}>
+                  Nueva contraseña
+                </Text>
                 <Input
                   value={newPassword}
                   onChangeText={setNewPassword}
                   placeholder="Mínimo 8 caracteres"
                   secureTextEntry
-                  backgroundColor="#F8FAFC"
-                  color="#0F172A"
-                  placeholderTextColor="#94A3B8"
-                  borderColor="#E2E8F0"
-                  borderWidth={1.5}
+                  backgroundColor="#161616"
+                  color="#F5F5F0"
+                  placeholderTextColor="#444"
+                  borderColor="#2A2A2A"
+                  borderWidth={0.5}
                   borderRadius="$3"
                   padding="$3"
-                  focusStyle={{ borderColor: "#2563EB" }}
+                  focusStyle={{ borderColor: "#C8F03C" }}
                 />
               </YStack>
 
               <YStack gap="$2">
-                <Text color="#334155" fontSize={13} fontWeight="600">Confirmar contraseña</Text>
+                <Text color="#666" fontSize={10} fontWeight="700" letterSpacing={1} style={{ textTransform: "uppercase" }}>
+                  Confirmar contraseña
+                </Text>
                 <Input
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   placeholder="Repite la contraseña"
                   secureTextEntry
-                  backgroundColor="#F8FAFC"
-                  color="#0F172A"
-                  placeholderTextColor="#94A3B8"
-                  borderColor="#E2E8F0"
-                  borderWidth={1.5}
+                  backgroundColor="#161616"
+                  color="#F5F5F0"
+                  placeholderTextColor="#444"
+                  borderColor="#2A2A2A"
+                  borderWidth={0.5}
                   borderRadius="$3"
                   padding="$3"
-                  focusStyle={{ borderColor: "#2563EB" }}
+                  focusStyle={{ borderColor: "#C8F03C" }}
                 />
               </YStack>
 
               <XStack gap="$3" marginTop="$2">
                 <Button
-                  flex={1}
-                  size="$4"
-                  backgroundColor="#F8FAFC"
-                  borderWidth={1}
-                  borderColor="#E2E8F0"
+                  flex={1} size="$4"
+                  backgroundColor="#161616"
+                  borderWidth={0.5} borderColor="#2A2A2A"
                   borderRadius="$4"
                   onPress={() => setIsPasswordSheetOpen(false)}
                   pressStyle={{ opacity: 0.7 }}
                 >
-                  <Text color="#64748B" fontWeight="600">Cancelar</Text>
+                  <Text color="#555" fontWeight="700">Cancelar</Text>
                 </Button>
                 <Button
-                  flex={1}
-                  size="$4"
-                  backgroundColor="#2563EB"
+                  flex={1} size="$4"
+                  backgroundColor="#C8F03C"
                   borderRadius="$4"
                   onPress={handleChangePassword}
                   disabled={isChanging}
                   pressStyle={{ opacity: 0.8 }}
                 >
-                  <Text color="#fff" fontWeight="700">
+                  <Text color="#0D0D0D" fontWeight="800">
                     {isChanging ? "Cambiando..." : "Actualizar"}
                   </Text>
                 </Button>

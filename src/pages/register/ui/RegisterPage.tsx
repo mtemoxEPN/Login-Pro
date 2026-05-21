@@ -1,11 +1,12 @@
 import { useState } from "react";
 import {
-  View, Text, StyleSheet, KeyboardAvoidingView,
-  Alert, TouchableOpacity, ScrollView, StatusBar,
+  View, Text, StyleSheet, KeyboardAvoidingView, TextInput,
+  Alert, TouchableOpacity, ScrollView, StatusBar, ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import { useRegister } from "@/features/auth/model/useRegister";
 import { Input } from "@/shared/ui/Input";
+import { GlowOrb } from "@/shared/ui/GlowOrb";
 import { Button } from "@/shared/ui/Button";
 import { theme } from "@/core/styles/theme";
 
@@ -40,193 +41,139 @@ export const RegisterPage = () => {
     }
   };
 
-  if (success) {
-    return (
-      <>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        <View style={styles.successContainer}>
-          <View style={styles.successIconWrap}>
-            <Text style={styles.successIcon}>📬</Text>
-          </View>
-          <Text style={styles.successTitle}>¡Revisa tu email!</Text>
-          <Text style={styles.successText}>
-            Enviamos un link de confirmación a{" "}
-            <Text style={{ fontWeight: "700", color: theme.colors.primary }}>{email}</Text>.
-            {"\n"}Confírmalo para poder iniciar sesión.
+  if (success) return (
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#0D0D0D" />
+      <View style={s.root}>
+        <View style={s.successWrap}>
+          <View style={s.accentBar} />
+          <Text style={s.successEmoji}>📬</Text>
+          <Text style={s.successTitle}>
+            Revisa tu{"\n"}<Text style={s.accent}>email.</Text>
           </Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.successBtn}>
-            <Text style={styles.successBtnText}>← Volver al login</Text>
+          <Text style={s.successSub}>
+            Enviamos un link de confirmación a{"\n"}
+            <Text style={{ color: "#F5F5F0", fontWeight: "700" }}>{email}</Text>
+          </Text>
+          <TouchableOpacity style={s.outlineBtn} onPress={() => router.back()}>
+            <Text style={s.outlineBtnText}>← Volver al login</Text>
           </TouchableOpacity>
         </View>
-      </>
-    );
-  }
+      </View>
+    </>
+  );
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <StatusBar barStyle="light-content" backgroundColor="#0D0D0D" />
+      <KeyboardAvoidingView style={s.root} behavior="padding">
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={s.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Hero */}
-          <View style={styles.hero}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoEmoji}>✨</Text>
-            </View>
-            <Text style={styles.appName}>Crear cuenta</Text>
-            <Text style={styles.tagline}>Únete a ESFOT Auth</Text>
-          </View>
-
-          {/* Card */}
-          <View style={styles.card}>
-            <Input
-              label="Correo electrónico"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              placeholder="tu@correo.com"
-            />
-            <Input
-              label="Contraseña"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholder="Mínimo 8 caracteres"
-              showPasswordPolicy
-            />
-            <Input
-              label="Confirmar contraseña"
-              value={confirm}
-              onChangeText={setConfirm}
-              secureTextEntry
-              placeholder="Repite tu contraseña"
-            />
-            <Button
-              onPress={handleRegister}
-              isLoading={register.isPending}
-              label="Crear cuenta"
-            />
-          </View>
-
-          {/* Footer */}
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.footerRow}
-          >
-            <Text style={styles.footerText}>
-              ¿Ya tienes cuenta?{" "}
-              <Text style={styles.footerLink}>Inicia sesión</Text>
+          {/* Luces de fondo — igual en Register y ForgotPassword */}
+          <GlowOrb color="rgba(160,80,255,1)" size={280} style={{ top: -100, left: -100 }} />
+          <GlowOrb color="rgba(200,240,60,1)" size={200} style={{ top: -60, right: -70 }} />
+          <GlowOrb color="rgba(100,60,220,1)" size={260} style={{ top: 220, left: "20%" }} />
+          
+          <View style={s.hero}>
+            <View style={s.accentBar} />
+            <Text style={s.eyebrow}>ESFOT · Auth</Text>
+            <Text style={s.h1}>
+              Crear{"\n"}<Text style={s.accent}>cuenta.</Text>
             </Text>
-          </TouchableOpacity>
+            <Text style={s.tagline}>Únete en segundos</Text>
+          </View>
+
+          <View style={s.separator} />
+
+          <View style={s.form}>
+            <View style={s.fieldGroup}>
+              <Text style={s.fieldLabel}>Correo</Text>
+              <TextInput
+                style={s.fieldInput}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="tu@correo.com"
+                placeholderTextColor="#444"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={s.fieldGroup}>
+              <Text style={s.fieldLabel}>Contraseña</Text>
+              <Input
+                label=""
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                placeholder="Mínimo 8 caracteres"
+                showPasswordPolicy
+              />
+            </View>
+
+            <View style={s.fieldGroup}>
+              <Text style={s.fieldLabel}>Confirmar contraseña</Text>
+              <TextInput
+                style={s.fieldInput}
+                value={confirm}
+                onChangeText={setConfirm}
+                placeholder="Repite tu contraseña"
+                placeholderTextColor="#444"
+                secureTextEntry
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[s.ctaBtn, register.isPending && s.btnDisabled]}
+              onPress={handleRegister}
+              disabled={register.isPending}
+              activeOpacity={0.85}
+            >
+              {register.isPending
+                ? <ActivityIndicator color="#0D0D0D" />
+                : <Text style={s.ctaBtnText}>Crear cuenta</Text>
+              }
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.back()} style={s.footerRow}>
+              <Text style={s.footerText}>
+                ¿Ya tienes cuenta? <Text style={s.footerLink}>Inicia sesión</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.bg,
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  hero: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#FFF7ED",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    ...theme.shadow.subtle,
-  },
-  logoEmoji: { fontSize: 36 },
-  appName: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: theme.colors.text,
-    letterSpacing: -0.5,
-    marginBottom: 6,
-  },
-  tagline: {
-    fontSize: 15,
-    color: theme.colors.textMuted,
-  },
-  card: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.radius.xl,
-    padding: 24,
-    gap: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    ...theme.shadow.card,
-  },
-  footerRow: {
-    alignItems: "center",
-    marginTop: 28,
-  },
-  footerText: {
-    color: theme.colors.textMuted,
-    fontSize: 14,
-  },
-  footerLink: {
-    color: theme.colors.primary,
-    fontWeight: "700",
-  },
-  // Success
-  successContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.bg,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  successIconWrap: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#F0FDF4",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-    ...theme.shadow.subtle,
-  },
-  successIcon: { fontSize: 48 },
-  successTitle: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: theme.colors.text,
-    marginBottom: 12,
-    letterSpacing: -0.5,
-  },
-  successText: {
-    fontSize: 15,
-    color: theme.colors.textMid,
-    textAlign: "center",
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-  successBtn: {
-    backgroundColor: theme.colors.primaryLight,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderRadius: theme.radius.full,
-  },
-  successBtnText: {
-    color: theme.colors.primary,
-    fontWeight: "700",
-    fontSize: 15,
-  },
+const s = StyleSheet.create({
+  root: { flex: 1, backgroundColor: "#0D0D0D" },
+  scroll: { flexGrow: 1, justifyContent: "center", paddingBottom: 40 },
+  hero: { paddingHorizontal: 28, paddingTop: 60, paddingBottom: 28 },
+  accentBar: { width: 40, height: 4, backgroundColor: "#C8F03C", borderRadius: 100, marginBottom: 24 },
+  eyebrow: { fontSize: 11, fontWeight: "700", color: "#C8F03C", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 10 },
+  h1: { fontSize: 40, fontWeight: "800", color: "#F5F5F0", letterSpacing: -1.5, lineHeight: 44, marginBottom: 8 },
+  accent: { color: "#C8F03C" },
+  tagline: { fontSize: 14, color: "#555", lineHeight: 20 },
+  separator: { height: 0.5, backgroundColor: "#1A1A1A", marginHorizontal: 28 },
+  form: { paddingHorizontal: 24, paddingTop: 24, gap: 14 },
+  fieldGroup: { gap: 6 },
+  fieldLabel: { fontSize: 10, fontWeight: "700", color: "#666", letterSpacing: 1, textTransform: "uppercase" },
+  fieldInput: { backgroundColor: "#161616", borderWidth: 0.5, borderColor: "#2A2A2A", borderRadius: 14, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: "#F5F5F0" },
+  ctaBtn: { backgroundColor: "#C8F03C", borderRadius: 16, paddingVertical: 16, alignItems: "center" },
+  ctaBtnText: { fontSize: 15, fontWeight: "800", color: "#0D0D0D", letterSpacing: -0.2 },
+  btnDisabled: { opacity: 0.5 },
+  footerRow: { alignItems: "center" },
+  footerText: { fontSize: 13, color: "#444" },
+  footerLink: { color: "#C8F03C", fontWeight: "700" },
+  successWrap: { flex: 1, justifyContent: "center", paddingHorizontal: 32 },
+  successEmoji: { fontSize: 52, marginBottom: 20 },
+  successTitle: { fontSize: 40, fontWeight: "800", color: "#F5F5F0", letterSpacing: -1.2, lineHeight: 44, marginBottom: 14 },
+  successSub: { fontSize: 15, color: "#555", lineHeight: 24, marginBottom: 36 },
+  outlineBtn: { borderWidth: 1, borderColor: "#2A2A2A", borderRadius: 16, paddingVertical: 15, alignItems: "center" },
+  outlineBtnText: { fontSize: 14, color: "#888", fontWeight: "600" },
 });
